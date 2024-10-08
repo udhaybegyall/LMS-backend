@@ -11,14 +11,14 @@ export interface User {
 
 export class UserModel {
   static async getAllMembers() {
-    const query = 'SELECT id, username, email, role, is_deleted FROM users';
-    const { rows } = await pool.query(query);
+    const { rows } = await pool.query(
+      'SELECT id, username, is_active FROM users WHERE role = $1', ['MEMBER']);
     return rows;
   }
 
   static async getMemberBorrowHistory(userId: number) {
     const query = `
-      SELECT bh.id, b.title, bh.borrow_date, bh.return_date
+      SELECT bh.id, bh.borrow_date, bh.return_date
       FROM borrow_history bh
       JOIN books b ON bh.book_id = b.id
       WHERE bh.user_id = $1
