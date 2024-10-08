@@ -10,6 +10,24 @@ export interface User {
 }
 
 export class UserModel {
+  static async getAllMembers() {
+    const query = 'SELECT id, username, email, role, is_deleted FROM users';
+    const { rows } = await pool.query(query);
+    return rows;
+  }
+
+  static async getMemberBorrowHistory(userId: number) {
+    const query = `
+      SELECT bh.id, b.title, bh.borrow_date, bh.return_date
+      FROM borrow_history bh
+      JOIN books b ON bh.book_id = b.id
+      WHERE bh.user_id = $1
+      ORDER BY bh.borrow_date DESC
+    `;
+    const { rows } = await pool.query(query, [userId]);
+    return rows;
+  }
+
   static async create(username: string, password: string, role: 'LIBRARIAN' | 'MEMBER'): Promise<User> {
     const hashedPassword = await bcrypt.hash(password, 10);
     const result = await pool.query(

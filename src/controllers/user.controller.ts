@@ -5,6 +5,25 @@ import { AuthRequest } from '../middleware/auth.middleware';
 import bcrypt from 'bcrypt';
 
 export class UserController {
+  static async getAllMembers(req: Request, res: Response) {
+    try {
+      const members = await UserModel.getAllMembers();
+      res.json(members);
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching members', error });
+    }
+  }
+
+  static async getMemberBorrowHistory(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const history = await UserModel.getMemberBorrowHistory(parseInt(id));
+      res.json(history);
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching member borrow history', error });
+    }
+  }
+
   static async addMember(req: Request, res: Response): Promise<void> {
     try {
       const { username, password } = req.body;
